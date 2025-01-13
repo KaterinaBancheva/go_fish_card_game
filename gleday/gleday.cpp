@@ -34,9 +34,9 @@ std::vector<Card> initializeDeck()
 }
 void swap(Card& a, Card& b)
 {
-    Card t = a;
+    Card temp = a;
     a = b;
-    b = t;
+    b = temp;
 }
 // Shuffle the deck
 void shuffleDeck(std::vector<Card>& deck) 
@@ -68,19 +68,10 @@ void printHand(const std::vector<Card>& hand)
     {
         std::cout << hand[i].power << " of " << hand[i].suit << std::endl;
     }
-    /*for (const auto& card : hand)
-    {
-        std::cout << card.power << " of " << card.suit << std::endl;
-    }*/
 }
 
 bool contains(std::string& power, const std::vector<Card>& deck)
-{
-    if ((deck.end()-1)->power == power)
-    {
-        return true;
-    }
-    
+{   
     for (int i = 0; i < deck.size(); i++)
     {
         if (deck[i].power == power)
@@ -136,13 +127,13 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
 
         // Check if the computer has the card
         bool found = false;
-        int countCards = 0;
+        //int countCards = 0;
         for (int i = 0; i < computer.size(); i++)
         {
             if (computer[i].power == power)
             {
                 found = true;
-                countCards++;
+                //countCards++;
                 player.push_back(computer[i]);
                 if (countCardsOfPower(power, player) == 4)
                 {
@@ -162,9 +153,17 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
                 player.push_back(deck.back());
                 deck.pop_back();
                 
+                if (countCardsOfPower(power, player) == 4)
+                {
+                    char parse = power[0];
+                    tutti_fruttiPlayer.push_back(parse);
+                    removeFruitsFromDeck(power, player);
+                }
+
                 if (player.back().power == power)
                 {
                     found = true;
+                    std::cout << "You drew a " << power << '.' << std::endl;
                     continue;
                 }
             }
@@ -193,15 +192,15 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
     std::cout << "Computer's turn!" << std::endl;
     if (!player.empty()) 
     {
-        std::string power = computer[rand() % computer.size()].power;
-        std::cout << "Computer asks for " << power << "!" << std::endl;
-
         // Check if the player has the card
         bool found = false;
         int countCards = 0;
         bool valid = true;
         while (valid)
         {
+            std::string power = computer[rand() % computer.size()].power;
+            std::cout << "Computer asks for " << power << "!" << std::endl;
+
             for (int i = 0; i < player.size(); i++)
             {
                 if (player[i].power == power)
@@ -227,8 +226,16 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
                     computer.push_back(deck.back());
                     deck.pop_back();
 
+                    if (countCardsOfPower(power, computer) == 4)
+                    {
+                        char parse = power[0];
+                        tutti_fruttiComputer.push_back(parse);
+                        removeFruitsFromDeck(power, computer);
+                    }
+
                     if (computer.back().power == power)
                     {
+                        std::cout << "Computer drew a " << power << '.' << std::endl;
                         found = true;
                         continue;
                     }
@@ -242,6 +249,7 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
             else
             {
                 std::cout << "You give " << power << " to the computer!" << std::endl;
+                found = false;
             }
         }
 
@@ -288,6 +296,8 @@ int main() {
         computerTurn(deck, player, computer);
         game_over = checkWinner(player, computer);
     }
+
+
 
     return 0;
 }
