@@ -97,15 +97,13 @@ int countCardsOfPower(std::string& power, const std::vector<Card>& deck)
     return result;
 }
 
-void removeFruitsFromDeck(std::string& power, std::vector<Card>& deck)
+void removeFruitsFromDeck(std::string& power, std::vector<Card>& deck) 
 {
-    int dif = 0;
     for (int i = 0; i < deck.size(); i++)
     {
         if (deck[i].power == power)
         {
-            deck.erase(deck.begin() +i - dif);
-            dif++;
+            deck.erase(deck.begin() + i);
         }
     }
 }
@@ -129,21 +127,22 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
 
         // Check if the computer has the card
         bool found = false;
-        //int countCards = 0;
+        int countCards = 0;
         for (int i = 0; i < computer.size(); i++)
         {
             if (computer[i].power == power)
             {
                 found = true;
-                //countCards++;
+                countCards++;
                 player.push_back(computer[i]);
+
                 if (countCardsOfPower(power, player) == 4)
                 {
                     std::string ans;
-                    std::cout << "Do you have four of " << power << "? (yes/no)";
-                    std::cin >> ans;
                     while (true)
                     {
+                        std::cout << "Do you have four of " << power << "? (yes/no)";
+                        std::cin >> ans;
                         if (ans == "yes")
                         {
                             char parse = power[0];
@@ -153,7 +152,7 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
                         }
                         else
                         {
-                            std::cout << "Incorrect answer";
+                            std::cout << "Incorrect answer" << std:: endl;
                         }
                     }
                 }
@@ -172,10 +171,10 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
                 if (countCardsOfPower(power, player) == 4)
                 {
                     std::string ans;
-                    std::cout << "Do you have four of " << power << "? (yes/no)";
-                    std::cin >> ans;
                     while(true)
                     {
+                        std::cout << "Do you have four of " << power << "? (yes/no)";
+                        std::cin >> ans;
                         if (ans == "yes")
                         {
                             char parse = power[0];
@@ -218,12 +217,12 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
 
 bool typeAnswer(std::string& power, bool&found)
 {
-    std::cout << "Do you have " << power << "? (yes/no)";
     std::string answer = " ";
-    std::cin >> answer;
 
     while(true)
     {
+        std::cout << "Do you have " << power << "? (yes/no)";
+        std::cin >> answer;
         if (answer == "yes")
         {
             found = true;
@@ -236,7 +235,7 @@ bool typeAnswer(std::string& power, bool&found)
         }
         else
         {
-            std::cout << "Incorrect answer!";
+            std::cout << "Incorrect answer!" << std::endl;
         }
     }
 
