@@ -12,7 +12,8 @@ struct Card
 };
 
 const std::string suits[] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-const std::string powers[] = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
+const std::string powers[] = { "2", "3", "4", "5", "6" };
+//const std::string powers[] = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
 
 std::vector<char> tutti_fruttiPlayer;
 std::vector<char> tutti_fruttiComputer;  
@@ -24,7 +25,7 @@ std::vector<Card> initializeDeck()
     
     for (int i = 0; i < 4; i++) 
     {
-        for (int j = 0; j < 13; j++) 
+        for (int j = 0; j < 5; j++) //13 karti j
         {
             deck.push_back({suits[i],powers[j]});
         }
@@ -39,7 +40,7 @@ void swap(Card& a, Card& b)
     a = b;
     b = temp;
 }
-// Shuffle the deck
+
 void shuffleDeck(std::vector<Card>& deck) 
 {
     srand(time(0));
@@ -49,7 +50,6 @@ void shuffleDeck(std::vector<Card>& deck)
     }
 }
 
-// Deal initial cards to players
 void dealCards(std::vector<Card>& deck, std::vector<Card>& player, std::vector<Card>& computer) 
 {
     for (int i = 0; i < 6; i++) 
@@ -62,12 +62,20 @@ void dealCards(std::vector<Card>& deck, std::vector<Card>& player, std::vector<C
     }
 }
 
-// Print player's hand
 void printHand(const std::vector<Card>& hand)
 {
     for (int i = 0; i < hand.size(); i++)
     {
         std::cout << hand[i].power << " of " << hand[i].suit << std::endl;
+    }
+}
+
+//da mahna
+void printFruits(std::vector<char>& tutti_frutti)
+{
+    for(int i = 0; i < tutti_frutti.size(); i++)
+    {
+        std::cout << tutti_frutti[i] << " ";
     }
 }
 
@@ -81,6 +89,19 @@ bool contains(std::string& power, const std::vector<Card>& deck)
         }
     }
     
+    return false;
+}
+
+bool contains(char current, const std::vector<char>& tutti_frutti)
+{
+    for (int i = 0; i < tutti_frutti.size(); i++)
+    {
+        if (tutti_frutti[i] == current)
+        {
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -113,12 +134,22 @@ void removeFruitsFromDeck(std::string& power, std::vector<Card>& deck)
     }
 }
 
-//Player's turn
 void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<Card>& computer) 
 {
     bool valid = true;
     while (valid)
     {
+        if (computer.empty())
+        {
+            break;
+        }
+
+        if (player.empty())
+        {
+            std::cout << "Drawing a card from the deck." << std::endl;
+            player.push_back(deck.back());
+            deck.pop_back();
+        }
         std::string power;
         std::cout << "Your turn! Enter a card value to ask for: ";
         std::cin >> power;
@@ -130,10 +161,9 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
         }
         std::cout << std::endl;
 
-        // Check if the computer has the card
         bool found = false;
         int countCards = 0;
-        for (int i = 0; i < computer.size(); i++)
+        for (int i = 0; i < computer.size();)
         {
             if (computer[i].power == power)
             {
@@ -164,6 +194,7 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
                     }
                 }*/
             }
+            i++;
         }
        // std::cout << found;
         if (!found)
@@ -242,8 +273,13 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
 
     printHand(player);
     std::cout << std::endl;
+    std::cout << "fruits player: ";
+    printFruits(tutti_fruttiPlayer);
     std::cout << std::endl << "Computer's hand: " << std::endl;
     printHand(computer);
+    std::cout << std::endl;
+    std::cout << "fruits comp: ";
+    printFruits(tutti_fruttiComputer);
     std::cout << std::endl;
 }
 
@@ -274,25 +310,88 @@ bool typeAnswer(std::string& power, bool&found)
     return found;
 }
 
+void takeFruits(char current, std::vector<char>& in, std::vector<char>& out, bool& found)
+{
+    found = false;
+    for (int i = 0; i < out.size(); i++)
+    {
+        if (out[i] == current)
+        {
+            in.push_back(current);
+            out.erase(out.begin() + i);
+            found = true;
+            break;
+        }
+    }
+}
+//second stage
+void playerTurn(std::vector<char>& tutti_fruttiPlayer, std::vector<char>& tutti_fruttiComputer)
+{
+    char current;
+    bool found;
+    do
+    {
+        if (tutti_fruttiComputer.empty() || tutti_fruttiComputer.empty())
+        {
+            break;
+        }
+
+        std::cout << "Your turn! Enter a card value to ask for: ";
+        std::cin >> current;
+
+        takeFruits(current, tutti_fruttiPlayer, tutti_fruttiComputer, found); // in out
+
+        if(found)
+        {
+            std::cout << "Computer gives you " << current << "!" << std::endl;
+        }
+        else
+        {
+            std::cout << "Computer doesn't have " << current << std::endl;
+        }
+
+    } while (found);
+   
+    std::cout << std::endl;
+    std::cout << "fruits player: ";
+    printFruits(tutti_fruttiPlayer);
+    std::cout << std::endl;
+    std::cout << "fruits comp: ";
+    printFruits(tutti_fruttiComputer);
+    std::cout << std::endl;
+}
+
+
 // Computer's turn (randomized)
 void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<Card>& computer)
 {
     std::cout << "Computer's turn!" << std::endl;
     if (!player.empty()) 
     {
-        // Ask if the player has the card
         bool found = false;
         //int countCards = 0;
         bool valid = true;
         while (valid)
         {
+            if (player.empty() ) //|| computer.empty()
+            {
+                break;
+            }
+
+            if (computer.empty())
+            {
+                std::cout << "Computer draws a card from the deck." << std::endl;
+                computer.push_back(deck.back());
+                deck.pop_back();
+            }
+
             std::string power = computer[rand() % computer.size()].power;
             std::cout << "Computer asks for " << power << "!" << std::endl;
             typeAnswer(power, found);
 
             if(found)
             {
-                for (int i = 0; i < player.size(); i++)
+                for (int i = 0; i < player.size(); )
                 {
                     if (player[i].power == power)
                     {
@@ -300,17 +399,8 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
                         //countCards++;
                         computer.push_back(player[i]);
                         player.erase(player.begin() + i);
-                        std::cout << "You give " << power << " to the computer!" << std::endl;
-
-                        if (countCardsOfPower(power, computer) == 4)
-                        {
-                            char parse = player[i].power[0];
-                            tutti_fruttiComputer.push_back(parse);
-                            removeFruitsFromDeck(power, computer);
-                            std::cout << "Computer has four of " << power << ".";
-                            std::cout << "Computer puts away " << power << "." << std::endl;
-                        }
                     }
+                    i++;
                 }
             }
 
@@ -322,8 +412,8 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
                     computer.push_back(deck.back());
                     deck.pop_back();
 
-                       //drawnCard
-                    if (countCardsOfPower(power, computer) == 4)
+                    Card drawnCard = computer.back();  
+                    if (countCardsOfPower(drawnCard.power, computer) == 4)
                     {
                         char parse = power[0];
                         tutti_fruttiComputer.push_back(parse);
@@ -333,7 +423,7 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
                         removeFruitsFromDeck(power, computer);
                     }
 
-                    if (computer.back().power == power)
+                    if (drawnCard.power == power)
                     {
                         std::cout << "Computer drew a " << power << '.' << std::endl;
                         found = true;
@@ -348,28 +438,93 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
             }
             else
             {
-                //std::cout << "You give " << power << " to the computer!" << std::endl;
+                std::cout << "You give " << power << " to the computer!" << std::endl;
+                if (countCardsOfPower(power, computer) == 4)
+                {
+                    char parse = computer.back().power[0];
+                    tutti_fruttiComputer.push_back(parse);
+                    removeFruitsFromDeck(power, computer);
+                    std::cout << "Computer has four of " << power << ".";
+                    std::cout << "Computer puts away " << power << "." << std::endl;
+                }
                 found = false;
             }
         }
 
         printHand(player);
         std::cout << std::endl;
+        std::cout << "fruits player: ";
+        printFruits(tutti_fruttiPlayer);
         std::cout << std::endl << "Computer's hand: " << std::endl;
         printHand(computer);
+        std::cout << "fruits comp: ";
+        printFruits(tutti_fruttiComputer);
+        std::cout << std::endl;
         std::cout << std::endl;
     }
+}
+
+//second stage
+void computerTurn(std::vector<char>& tutti_fruttiPlayer, std::vector<char>& tutti_fruttiComputer)
+{
+    char current;
+    bool found;
+    do
+    {
+        if (tutti_fruttiPlayer.empty() || tutti_fruttiComputer.empty())
+        {
+            break;
+        }
+        std::string c = powers[rand() % powers->size()];
+        current = c[0];
+        std::cout << "Computer asks for " << current << "!" << std::endl;
+        takeFruits(current, tutti_fruttiComputer, tutti_fruttiPlayer, found); // da prenapisha
+
+        if(found)
+        {
+            std::cout << "You give " << current << " to the computer!" << std::endl;
+        }
+        else
+        {
+            std::cout << "You don't have " << current << "." << std::endl;
+        }
+
+    } while (found);
+
+    std::cout << std::endl;
+    std::cout << "fruits player: ";
+    printFruits(tutti_fruttiPlayer);
+    std::cout << std::endl;
+    std::cout << "fruits comp: ";
+    printFruits(tutti_fruttiComputer);
+    std::cout << std::endl;
 }
 
 // Check for winner
 bool checkWinner(const std::vector<Card>& player, const std::vector<Card>& computer) 
 {
-    if (player.empty()) {
-        std::cout << "Computer wins!" << std::endl;
+    if (player.empty()) 
+    {
+        std::cout << "Computer wins the first stage of the game!" << std::endl;
         return true;
     }
     else if (computer.empty()) {
-        std::cout << "You win!" << std::endl;
+        std::cout << "You win the first stage of the game!" << std::endl;
+        return true;
+    }
+    return false;
+}
+
+bool checkWinner(std::vector<char>& tutti_fruttiComputer, std::vector<char>& tutti_fruttiPlayer )
+{
+    if (tutti_fruttiPlayer.empty())
+    {
+        std::cout << "Computer wins the game!" << std::endl;
+        return true;
+    }
+    else if (tutti_fruttiComputer.empty())
+    {
+        std::cout << "You win the game!" << std::endl;
         return true;
     }
     return false;
@@ -389,15 +544,29 @@ int main() {
     
 
     bool game_over = false;
-    while (!game_over) {
+    while (!game_over)
+    {
         playerTurn(deck, player, computer);
         game_over = checkWinner(player, computer);
+        //std::cout << game_over;
         if (game_over) break;
 
         computerTurn(deck, player, computer);
         game_over = checkWinner(player, computer);
+        //std::cout << game_over;
     }
 
+    //second stage
+    game_over = false;
+    while (!game_over)
+    {
+        playerTurn(tutti_fruttiPlayer, tutti_fruttiComputer);
+        game_over = checkWinner(tutti_fruttiPlayer, tutti_fruttiComputer);
+        if (game_over) break;
+
+        computerTurn(tutti_fruttiPlayer, tutti_fruttiComputer);
+        game_over = checkWinner(tutti_fruttiPlayer, tutti_fruttiComputer);
+    }
 
 
     return 0;
