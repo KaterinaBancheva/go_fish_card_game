@@ -31,7 +31,6 @@ struct Card {
 };
 
 const std::string suits[] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-//const std::string powers[] = { "2", "3", "4", "5", "6" };
 const std::string powers[] = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
 
 std::vector<char> tutti_fruttiPlayer;
@@ -42,7 +41,7 @@ std::vector<Card> initializeDeck() {
     std::vector<Card> deck;
     
     for (int i = 0; i < NUMBER_OF_SUITS; i++) {
-        for (int j = 0; j < NUMBER_OF_POWERS; j++) { // j < NUMBER_OF_POWERS
+        for (int j = 0; j < NUMBER_OF_POWERS; j++) {
             deck.push_back({suits[i],powers[j]});
         }
     }
@@ -162,7 +161,6 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
         std::cout << std::endl;
 
         bool found = false;
-        //check if computer has cards of the same power
         for (int i = 0; i < computer.size();) {
             if (computer[i].power == power) {
                 found = true;
@@ -235,16 +233,18 @@ void playerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vector<
         }
     }
 
+    std::cout << std::endl;
+    std::cout << "Your current hand: " << std::endl;
     printHand(player);
     std::cout << std::endl;
-    std::cout << "fruits player: ";
+    /*std::cout << "fruits player: ";
     printFruits(tutti_fruttiPlayer);
     std::cout << std::endl << "Computer's hand: " << std::endl;
     printHand(computer);
     std::cout << std::endl;
     std::cout << "fruits comp: ";
     printFruits(tutti_fruttiComputer);
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 }
 
 bool typeAnswer(std::string& power, bool&found) {
@@ -387,7 +387,7 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
             }
         }
 
-        printHand(player);
+        /*printHand(player);
         std::cout << std::endl;
         std::cout << "fruits player: ";
         printFruits(tutti_fruttiPlayer);
@@ -396,7 +396,7 @@ void computerTurn(std::vector<Card>& deck, std::vector<Card>& player, std::vecto
         std::cout << "fruits comp: ";
         printFruits(tutti_fruttiComputer);
         std::cout << std::endl;
-        std::cout << std::endl;
+        std::cout << std::endl;*/
     }
 }
 
@@ -469,13 +469,10 @@ bool checkWinner(std::vector<char>& tutti_fruttiComputer, std::vector<char>& tut
 int main() {
     std::vector<Card> deck = initializeDeck();
     shuffleDeck(deck);
-    //printHand(deck);
 
     std::vector<Card> player, computer;
     dealCards(deck, player, computer);
-
-   // std::cout << validDeck(computer) << validDeck(player) << std::endl;
-
+    
     std::cout << "Your initial hand:" << std::endl;
     printHand(player);
     std::cout << std::endl;
@@ -485,12 +482,11 @@ int main() {
     while (!game_over) {
         playerTurn(deck, player, computer);
         game_over = checkWinner(player, computer);
-        //std::cout << game_over;
         if (game_over) break;
 
         computerTurn(deck, player, computer);
         game_over = checkWinner(player, computer);
-        //std::cout << game_over;
+        //system("cls");
     }
 
     //second stage
